@@ -42,19 +42,4 @@ export const routes: RouteType[] = [
         component: _import('index'),
         children: []
       },
-      {
-        path: '/page3',
-        component: _import('page3'),
-        children: []
-      },
-      {
-        path: '/ttt',
-        component: _import('ttt'),
-        children: []
-      },
-      {
-        path: '/tttt',
-        component: _import('tttt'),
-        children: []
-      },
 ];

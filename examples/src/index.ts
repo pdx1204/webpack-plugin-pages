@@ -1,3 +1,3 @@
-import { routes } from "./routes";
+import { routes } from "../.routes";
 
 console.log(routes);
