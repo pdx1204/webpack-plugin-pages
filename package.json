@@ -1,0 +1,59 @@
+{
+  "name": "webpack-plugin-pages",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "scripts": {
+    "dev": "rollup -c -w",
+    "build": "rollup -c",
+    "check": "rome check . --apply-suggested",
+    "format": "rome format . --write",
+    "prepare": "husky install",
+    "commit": "cz",
+    "test": "jest"
+  },
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "exports": {
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.js"
+  },
+  "author": "Quincy Qiu",
+  "license": "ISC",
+  "devDependencies": {
+    "@commitlint/cli": "^17.4.4",
+    "@commitlint/config-conventional": "^17.4.4",
+    "@jest/globals": "^29.4.3",
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/node": "^18.15.10",
+    "@types/react": "^18.0.29",
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^8.0.3",
+    "jest": "^29.4.3",
+    "lint-staged": "^13.1.2",
+    "react": "^18.2.0",
+    "rollup": "^3.15.0",
+    "rome": "^11.0.0",
+    "ts-jest": "^29.0.5",
+    "tslib": "^2.5.0",
+    "typescript": "^5.0.0",
+    "webpack": "^5.76.3"
+  },
+  "lint-staged": {
+    "src/**/*.{js,ts}": [
+      "rome format --write",
+      "rome check --apply-suggested"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "dependencies": {
+    "fast-glob": "^3.2.12"
+  }
+}
