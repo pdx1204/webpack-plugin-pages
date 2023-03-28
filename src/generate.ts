@@ -3,7 +3,11 @@ import path from "path";
 import { ALLOW_SUFFIX, DEPS_TEXT, EXPORT_TEXT, IMPORT_TEXT, TYPE_TEXT } from "./constants";
 import prettier from "prettier";
 
-export async function generateRoutes(pagesPath: string, template = "", routePath = "/") {
+const otherRoutePathMap: { [key: string]: string } = {
+  "/404": "*",
+};
+
+export async function generateRoutes(pagesPath: string, template = "", routeP = "/") {
   const files = await fs.readdir(pagesPath);
 
   for (const filename of files) {
@@ -20,18 +24,19 @@ export async function generateRoutes(pagesPath: string, template = "", routePath
       // 过滤掉 styled 文件
       if (removeSuffixPath === "styled") continue;
 
-      const rp = removeSuffixPath === "index" ? routePath : routePath + removeSuffixPath;
+      const rp = removeSuffixPath === "index" ? routeP : routeP + removeSuffixPath;
 
-      const path = rp.length > 1 && rp[rp.length - 1] === "/" ? rp.slice(0, -1) : rp;
+      const filePath = rp.length > 1 && rp[rp.length - 1] === "/" ? rp.slice(0, -1) : rp;
+      const routePath = otherRoutePathMap[filePath] ?? filePath;
       template += `
       {
-        path: '${path}',
-        component: _import('${path}'),
+        path: '${routePath}',
+        component: _import('${filePath}'),
         children: []
       },`;
     }
     if (isDir) {
-      template = await generateRoutes(fileDir, template, `${routePath}${filename}/`); //递归，如果是文件夹，就继续遍历该文件夹下面的文件
+      template = await generateRoutes(fileDir, template, `${routeP}${filename}/`); //递归，如果是文件夹，就继续遍历该文件夹下面的文件
     }
   }
   return template;
