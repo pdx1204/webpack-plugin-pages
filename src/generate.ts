@@ -41,40 +41,7 @@ export async function generateRoutes(
         routePath = routePath.replace(/\[.+\]/, `:${routePath.match(/\[.+\]/)?.[0].slice(1, -1)}`);
 
       // 当 有布局文件时
-      if (isLayout) {
-        if (routePath.endsWith("@")) {
-          if (routePath.endsWith("index@")) {
-            routePath = routePath.replace("index@", "");
-          } else {
-            routePath = routePath.replace("@", "");
-          }
-          console.log(routePath);
-          template += `
-          {
-            path: '${routePath}',
-            component: _import('${filePath}'),
-          },`;
-        } else {
-          template += `
-          {
-            path: '${routePath}',
-            component: Layout,
-            children: [
-              {
-                index: true,
-                component: _import('${filePath}'),
-              }
-            ],
-          },`;
-        }
-      } else {
-        template += `
-        {
-          path: '${routePath}',
-          component: _import('${filePath}'),
-          children: []
-        },`;
-      }
+      template = parseRouteTemplate(isLayout, routePath, template, filePath);
     }
     if (isDir) {
       template = await generateRoutes(fileDir, isLayout, template, `${routeP}${filename}/`); //递归，如果是文件夹，就继续遍历该文件夹下面的文件
@@ -115,3 +82,46 @@ export const handle = async (pagesPath: string, outDir: string) => {
 
   fs.writeFile(outPath, template, "utf8");
 };
+
+function parseRouteTemplate(
+  isLayout: boolean,
+  routePath: string,
+  template: string,
+  filePath: string
+) {
+  if (isLayout) {
+    if (routePath.endsWith("@")) {
+      if (routePath.endsWith("index@")) {
+        routePath = routePath.replace("index@", "");
+      } else {
+        routePath = routePath.replace("@", "");
+      }
+      console.log(routePath);
+      template += `
+          {
+            path: '${routePath}',
+            component: _import('${filePath}'),
+          },`;
+    } else {
+      template += `
+          {
+            path: '${routePath}',
+            component: Layout,
+            children: [
+              {
+                index: true,
+                component: _import('${filePath}'),
+              }
+            ],
+          },`;
+    }
+  } else {
+    template += `
+        {
+          path: '${routePath}',
+          component: _import('${filePath}'),
+          children: []
+        },`;
+  }
+  return template;
+}
