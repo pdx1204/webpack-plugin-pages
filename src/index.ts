@@ -1,8 +1,7 @@
 import path from "path";
-import fs from "fs/promises";
 import webpack from "webpack";
 import { handle } from "./generate";
-import { ALLOW_SUFFIX } from "./constants";
+import chokidar from "chokidar";
 
 type WebpackPluginPagesOptions = {
   path: string;
@@ -21,17 +20,24 @@ export class WebpackPluginPages {
 
   apply(compiler: webpack.Compiler) {
     compiler.hooks.afterPlugins.tap("WebpackPluginPages", () => {
-      handle(this.pagesPath, this.options.out);
-    });
-    // 编译器关闭时监听文件变化
-    compiler.hooks.shutdown.tapAsync("WebpackPluginPages", async () => {
+      const outDir = path.resolve(process.cwd(), this.options.out);
+      handle(this.pagesPath, outDir);
+
+      const watchPath = path.join(this.pagesPath, "**/*.{jsx,tsx}");
+      console.log(watchPath);
+
       // 递归监听文件夹变化
-      const watcher = fs.watch(this.pagesPath, { recursive: true });
-      for await (const event of watcher) {
-        console.log(event);
-        if (ALLOW_SUFFIX.includes(path.extname(event.filename)))
-          handle(this.pagesPath, this.options.out);
-      }
+      const watcher = chokidar.watch(watchPath, {
+        ignoreInitial: true, // 忽略第一次变化
+      });
+      watcher.on("add", (filePath) => {
+        console.log(filePath);
+        handle(this.pagesPath, outDir);
+      });
+      watcher.on("unlink", (filePath) => {
+        console.log(filePath);
+        handle(this.pagesPath, outDir);
+      });
     });
   }
 }

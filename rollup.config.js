@@ -13,6 +13,6 @@ export default {
     { file: "dist/index.cjs", format: "cjs" },
     { file: "dist/index.mjs", format: "es" },
   ],
-  external: ["fs/promises", "path"],
+  external: ["fs/promises", "path", "prettier", "chokidar"],
   plugins: [typescript(), commonjs(), json(), del({ targets: "dist/*" })],
 };

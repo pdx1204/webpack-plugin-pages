@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import { ALLOW_SUFFIX, DEPS_TEXT, EXPORT_TEXT, IMPORT_TEXT, TYPE_TEXT } from "./constants";
+import { DEPS_TEXT, EXPORT_TEXT, IMPORT_TEXT, TYPE_TEXT } from "./constants";
 import prettier from "prettier";
 
 const otherRoutePathMap: { [key: string]: string } = {
@@ -20,7 +20,7 @@ export async function generateRoutes(pagesPath: string, template = "", routeP = 
     const suffix = path.extname(filename);
     const removeSuffixPath = filename.replace(suffix, "");
 
-    if (isFile && ALLOW_SUFFIX.includes(suffix)) {
+    if (isFile) {
       // 过滤掉 styled 文件
       if (removeSuffixPath === "styled") continue;
 
@@ -42,27 +42,25 @@ export async function generateRoutes(pagesPath: string, template = "", routeP = 
   return template;
 }
 
-export const handle = async (pagesPath: string, out: string) => {
+export const handle = async (pagesPath: string, outDir: string) => {
   const routesText = await generateRoutes(pagesPath);
 
   const template = prettier.format(
     `${DEPS_TEXT}\n${TYPE_TEXT}\n${IMPORT_TEXT}\n${EXPORT_TEXT(routesText)}`
   );
 
-  const outDir = path.resolve(process.cwd(), `${out}`);
   try {
     await fs.mkdir(outDir, { recursive: true });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
-
   const outPath = path.resolve(outDir, "index.ts");
 
   try {
     await fs.access(outPath);
     await fs.rm(outPath);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 
   fs.writeFile(outPath, template, "utf8");
