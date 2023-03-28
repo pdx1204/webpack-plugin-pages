@@ -1,12 +1,8 @@
 import fs from "fs/promises";
 import path from "path";
-import { ALLOW_SUFFIX, IMPORT_TEXT } from "./constants";
+import { ALLOW_SUFFIX, DEPS_TEXT, EXPORT_TEXT, IMPORT_TEXT, TYPE_TEXT } from "./constants";
 
-export async function generateRoutes(
-  pagesPath: string,
-  template: string,
-  routePath = "/",
-) {
+export async function generateRoutes(pagesPath: string, template = "", routePath = "/") {
   const files = await fs.readdir(pagesPath);
 
   for (const filename of files) {
@@ -19,58 +15,38 @@ export async function generateRoutes(
     const suffix = path.extname(filename);
     const removeSuffixPath = filename.replace(suffix, "");
 
-    const rp =
-      removeSuffixPath === "index" ? routePath : routePath + removeSuffixPath;
-
     if (isFile && ALLOW_SUFFIX.includes(suffix)) {
       // 过滤掉 styled 文件
       if (removeSuffixPath === "styled") continue;
 
+      const rp = removeSuffixPath === "index" ? routePath : routePath + removeSuffixPath;
+
+      const path = rp.length > 1 && rp[rp.length - 1] === "/" ? rp.slice(0, -1) : rp;
       template += `
       {
-        path: '${
-          rp.length > 1 && rp[rp.length - 1] === "/" ? rp.slice(0, -1) : rp
-        }',
-        component: _import('${filename.replace(/\.(tsx|ts)$/, "")}'),
+        path: '${path}',
+        component: _import('${path}'),
         children: []
       },`;
     }
     if (isDir) {
-      template = await generateRoutes(
-        fileDir,
-        template,
-        `${routePath}${filename}/`,
-      ); //递归，如果是文件夹，就继续遍历该文件夹下面的文件
+      template = await generateRoutes(fileDir, template, `${routePath}${filename}/`); //递归，如果是文件夹，就继续遍历该文件夹下面的文件
     }
   }
   return template;
 }
 
 export const handle = async (pagesPath: string, out: string) => {
-  const template = `
-import {
-  LazyExoticComponent,
-  MemoExoticComponent,
-  ComponentType,
-  lazy,
-} from "react";
+  const routesText = await generateRoutes(pagesPath);
 
-export type RouteType = {
-  path?: string;
-  index?: boolean;
-  component?:
-    | LazyExoticComponent<ComponentType<unknown>>
-    | MemoExoticComponent<ComponentType>;
-  children?: RouteType[];
-};
-\nconst _import = (path: string) => lazy(() => ${IMPORT_TEXT});\nexport const routes: RouteType[] = [`;
-
-  const t = (await generateRoutes(pagesPath, template)) + "\n];";
+  const template = `${DEPS_TEXT}\n${TYPE_TEXT}\n${IMPORT_TEXT}\n${EXPORT_TEXT(routesText)}`;
 
   const outDir = path.resolve(process.cwd(), `${out}`);
   try {
     await fs.mkdir(outDir, { recursive: true });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 
   const outPath = path.resolve(outDir, "index.ts");
 
@@ -81,5 +57,5 @@ export type RouteType = {
     console.log(error);
   }
 
-  fs.writeFile(outPath, t, "utf8");
+  fs.writeFile(outPath, template, "utf8");
 };
