@@ -7,7 +7,12 @@ const otherRoutePathMap: { [key: string]: string } = {
   "/404": "*",
 };
 
-export async function generateRoutes(pagesPath: string, template = "", routeP = "/") {
+export async function generateRoutes(
+  pagesPath: string,
+  isLayout: boolean,
+  template = "",
+  routeP = "/"
+) {
   const files = await fs.readdir(pagesPath);
 
   for (const filename of files) {
@@ -24,6 +29,8 @@ export async function generateRoutes(pagesPath: string, template = "", routeP = 
       // 过滤掉 styled 文件
       if (removeSuffixPath === "styled") continue;
 
+      // 判断是否有layouts文件夹
+
       const rp = removeSuffixPath === "index" ? routeP : routeP + removeSuffixPath;
       const filePath = rp.length > 1 && rp[rp.length - 1] === "/" ? rp.slice(0, -1) : rp;
 
@@ -33,25 +40,63 @@ export async function generateRoutes(pagesPath: string, template = "", routeP = 
       if (routePath.search(/\[.+\]/) !== -1)
         routePath = routePath.replace(/\[.+\]/, `:${routePath.match(/\[.+\]/)?.[0].slice(1, -1)}`);
 
-      template += `
-      {
-        path: '${routePath}',
-        component: _import('${filePath}'),
-        children: []
-      },`;
+      // 当 有布局文件时
+      if (isLayout) {
+        if (routePath.endsWith("@")) {
+          if (routePath.endsWith("index@")) {
+            routePath = routePath.replace("index@", "");
+          } else {
+            routePath = routePath.replace("@", "");
+          }
+          console.log(routePath);
+          template += `
+          {
+            path: '${routePath}',
+            component: _import('${filePath}'),
+          },`;
+        } else {
+          template += `
+          {
+            path: '${routePath}',
+            component: Layout,
+            children: [
+              {
+                index: true,
+                component: _import('${filePath}'),
+              }
+            ],
+          },`;
+        }
+      } else {
+        template += `
+        {
+          path: '${routePath}',
+          component: _import('${filePath}'),
+          children: []
+        },`;
+      }
     }
     if (isDir) {
-      template = await generateRoutes(fileDir, template, `${routeP}${filename}/`); //递归，如果是文件夹，就继续遍历该文件夹下面的文件
+      template = await generateRoutes(fileDir, isLayout, template, `${routeP}${filename}/`); //递归，如果是文件夹，就继续遍历该文件夹下面的文件
     }
   }
   return template;
 }
 
 export const handle = async (pagesPath: string, outDir: string) => {
-  const routesText = await generateRoutes(pagesPath);
+  let isLayout = false;
+  const layoutPath = path.join(process.cwd(), "src/layouts");
+  try {
+    await fs.access(layoutPath);
+    isLayout = true;
+  } catch (error) {
+    console.log("没有layouts文件夹");
+  }
+
+  const routesText = await generateRoutes(pagesPath, isLayout);
 
   const template = prettier.format(
-    `${DEPS_TEXT}\n${TYPE_TEXT}\n${IMPORT_TEXT}\n${EXPORT_TEXT(routesText)}`
+    `${DEPS_TEXT(isLayout)}\n${TYPE_TEXT}\n${IMPORT_TEXT}\n${EXPORT_TEXT(routesText)}`
   );
 
   try {

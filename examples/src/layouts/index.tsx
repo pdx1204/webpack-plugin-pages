@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 function Layout() {
   return (
     <section>
+      <h1>Layout</h1>
       <Outlet />
     </section>
   );

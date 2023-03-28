@@ -16,6 +16,7 @@ const recursionGenerateRoute = (routes: RouteType[]) => {
           />
         );
       } else {
+        console.log(route.path, element);
         return (
           <Route
             key={route.path}
