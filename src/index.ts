@@ -24,6 +24,8 @@ export class WebpackPluginPages {
       const outDir = path.resolve(process.cwd(), this.options.out);
       handle(this.pagesPath, outDir);
 
+      if (compiler.options.mode === "production") return;
+
       const watchPath = path.join(this.pagesPath, "**/*");
       // 递归监听文件夹变化
       const watcher = chokidar.watch(watchPath, {
