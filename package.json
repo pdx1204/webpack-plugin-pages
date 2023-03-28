@@ -43,6 +43,9 @@
     "typescript": "^5.0.0",
     "webpack": "^5.76.3"
   },
+  "peerDependencies": {
+    "prettier": ">=^2.8.7"
+  },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
       "eslint --fix"

@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { ALLOW_SUFFIX, DEPS_TEXT, EXPORT_TEXT, IMPORT_TEXT, TYPE_TEXT } from "./constants";
+import prettier from "prettier";
 
 export async function generateRoutes(pagesPath: string, template = "", routePath = "/") {
   const files = await fs.readdir(pagesPath);
@@ -39,7 +40,9 @@ export async function generateRoutes(pagesPath: string, template = "", routePath
 export const handle = async (pagesPath: string, out: string) => {
   const routesText = await generateRoutes(pagesPath);
 
-  const template = `${DEPS_TEXT}\n${TYPE_TEXT}\n${IMPORT_TEXT}\n${EXPORT_TEXT(routesText)}`;
+  const template = prettier.format(
+    `${DEPS_TEXT}\n${TYPE_TEXT}\n${IMPORT_TEXT}\n${EXPORT_TEXT(routesText)}`
+  );
 
   const outDir = path.resolve(process.cwd(), `${out}`);
   try {
