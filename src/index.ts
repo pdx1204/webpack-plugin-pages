@@ -2,6 +2,7 @@ import path from "path";
 import webpack from "webpack";
 import { handle } from "./generate";
 import chokidar from "chokidar";
+import { ALLOW_SUFFIX } from "./constants";
 
 type WebpackPluginPagesOptions = {
   path: string;
@@ -23,20 +24,14 @@ export class WebpackPluginPages {
       const outDir = path.resolve(process.cwd(), this.options.out);
       handle(this.pagesPath, outDir);
 
-      const watchPath = path.join(this.pagesPath, "**/*.{jsx,tsx}");
-      console.log(watchPath);
-
+      const watchPath = path.join(this.pagesPath, "**/*");
       // 递归监听文件夹变化
       const watcher = chokidar.watch(watchPath, {
         ignoreInitial: true, // 忽略第一次变化
       });
-      watcher.on("add", (filePath) => {
-        console.log(filePath);
-        handle(this.pagesPath, outDir);
-      });
-      watcher.on("unlink", (filePath) => {
-        console.log(filePath);
-        handle(this.pagesPath, outDir);
+      watcher.on("all", (eventName, filePath) => {
+        console.log(eventName, filePath);
+        if (ALLOW_SUFFIX.includes(path.extname(filePath))) handle(this.pagesPath, this.options.out);
       });
     });
   }

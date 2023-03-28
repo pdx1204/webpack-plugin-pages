@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import { DEPS_TEXT, EXPORT_TEXT, IMPORT_TEXT, TYPE_TEXT } from "./constants";
+import { ALLOW_SUFFIX, DEPS_TEXT, EXPORT_TEXT, IMPORT_TEXT, TYPE_TEXT } from "./constants";
 import prettier from "prettier";
 
 const otherRoutePathMap: { [key: string]: string } = {
@@ -20,14 +20,19 @@ export async function generateRoutes(pagesPath: string, template = "", routeP = 
     const suffix = path.extname(filename);
     const removeSuffixPath = filename.replace(suffix, "");
 
-    if (isFile) {
+    if (isFile && ALLOW_SUFFIX.includes(suffix)) {
       // 过滤掉 styled 文件
       if (removeSuffixPath === "styled") continue;
 
       const rp = removeSuffixPath === "index" ? routeP : routeP + removeSuffixPath;
-
       const filePath = rp.length > 1 && rp[rp.length - 1] === "/" ? rp.slice(0, -1) : rp;
-      const routePath = otherRoutePathMap[filePath] ?? filePath;
+
+      let routePath = otherRoutePathMap[filePath] ?? filePath;
+
+      // 动态路由
+      if (routePath.search(/\[.+\]/) !== -1)
+        routePath = routePath.replace(/\[.+\]/, `:${routePath.match(/\[.+\]/)?.[0].slice(1, -1)}`);
+
       template += `
       {
         path: '${routePath}',

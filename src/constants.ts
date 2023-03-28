@@ -1,3 +1,5 @@
+export const ALLOW_SUFFIX = [".tsx", ".jsx"];
+
 export const DEPS_TEXT = `
 import {
     LazyExoticComponent,
