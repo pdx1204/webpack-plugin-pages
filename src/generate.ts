@@ -109,14 +109,13 @@ function parseRouteTemplate(
   filePath: string
 ) {
   if (isLayout) {
-    if (routePath.endsWith("@")) {
+    if (routePath.endsWith("@") || routePath === "*") {
       if (routePath.endsWith("index@")) {
         routePath = routePath.replace("/index@", "");
         if (routePath === "") routePath = "/";
       } else {
         routePath = routePath.replace("@", "");
       }
-      console.log(routePath);
       template += `
           {
             path: '${routePath}',
