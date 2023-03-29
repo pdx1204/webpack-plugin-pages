@@ -1,3 +1,3 @@
-# starter_ts
+# Webpack Plugin Pages
 
-Starter template for TypeScript library
+This is a plugin that automatically generates react routes
