@@ -1,4 +1,4 @@
-import { RouterView } from "./router/RouterView";
+import { RouterView } from "../.routes/RouterView";
 
 function App() {
   return <RouterView />;

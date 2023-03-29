@@ -1,7 +1,26 @@
 import fs from "fs/promises";
 import path from "path";
-import { ALLOW_SUFFIX, DEPS_TEXT, EXPORT_TEXT, IMPORT_TEXT, TYPE_TEXT } from "./constants";
+import {
+  ALLOW_SUFFIX,
+  DEPS_TEXT,
+  EXPORT_TEXT,
+  IMPORT_TEXT,
+  ROUTER_VIEW_TEXT,
+  TYPE_TEXT,
+} from "./constants";
 import prettier from "prettier";
+
+export async function generateRouterView(fallback: React.ReactNode) {
+  const outPath = path.resolve(process.cwd(), ".routes/RouterView.tsx");
+  try {
+    await fs.access(outPath);
+    await fs.rm(outPath);
+  } catch (error) {
+    // console.log(error);
+  }
+
+  fs.writeFile(outPath, prettier.format(ROUTER_VIEW_TEXT(fallback)), "utf8");
+}
 
 const otherRoutePathMap: { [key: string]: string } = {
   "/404": "*",
