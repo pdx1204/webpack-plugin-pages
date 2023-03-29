@@ -69,8 +69,8 @@ export const ROUTER_VIEW_TEXT = (fallback: React.ReactNode) => {
     });
   };
   
-  export const RouterView = () => {
-    return <Routes>{recursionGenerateRoute(routes)}</Routes>;
+  export const RouterView = ({ accessRoutes = routes }) => {
+    return <Routes>{recursionGenerateRoute(accessRoutes)}</Routes>;
   };
   `;
 };

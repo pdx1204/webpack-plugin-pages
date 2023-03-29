@@ -1,6 +1,6 @@
 import path from "path";
 import webpack from "webpack";
-import { generateRouterView, handle, updateAppPage } from "./generate";
+import { generateRouterView, handle } from "./generate";
 import chokidar from "chokidar";
 import { ALLOW_SUFFIX } from "./constants";
 
@@ -32,7 +32,6 @@ export class WebpackPluginPages {
       const outDir = path.resolve(process.cwd(), outFolderPath);
       await handle(this.pagesPath, outDir);
       await generateRouterView(fallback);
-      updateAppPage();
 
       if (compiler.options.mode === "production") return;
 
