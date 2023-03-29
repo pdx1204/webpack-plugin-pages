@@ -10,6 +10,27 @@ import {
 } from "./constants";
 import prettier from "prettier";
 
+export async function updateAppPage() {
+  const outPath = path.resolve(process.cwd(), "src/App.tsx");
+  const appText = `
+import { RouterView } from "../.routes/RouterView";
+
+function App() {
+  return <RouterView />;
+}
+
+export default App;
+  `;
+  try {
+    await fs.access(outPath);
+    await fs.rm(outPath);
+  } catch (error) {
+    // console.log(error);
+  }
+
+  fs.writeFile(outPath, prettier.format(appText), "utf8");
+}
+
 export async function generateRouterView(fallback: React.ReactNode) {
   const outPath = path.resolve(process.cwd(), ".routes/RouterView.tsx");
   try {

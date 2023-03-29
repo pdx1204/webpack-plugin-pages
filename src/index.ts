@@ -1,6 +1,6 @@
 import path from "path";
 import webpack from "webpack";
-import { generateRouterView, handle } from "./generate";
+import { generateRouterView, handle, updateAppPage } from "./generate";
 import chokidar from "chokidar";
 import { ALLOW_SUFFIX } from "./constants";
 
@@ -18,7 +18,7 @@ export class WebpackPluginPages {
     options: WebpackPluginPagesOptions = {
       path: "src/pages",
       outFolderPath: ".routes",
-      fallback: "加载中",
+      fallback: "加载中...",
     }
   ) {
     this.options = options;
@@ -31,7 +31,8 @@ export class WebpackPluginPages {
     compiler.hooks.afterPlugins.tap("WebpackPluginPages", async () => {
       const outDir = path.resolve(process.cwd(), outFolderPath);
       await handle(this.pagesPath, outDir);
-      generateRouterView(fallback);
+      await generateRouterView(fallback);
+      updateAppPage();
 
       if (compiler.options.mode === "production") return;
 
