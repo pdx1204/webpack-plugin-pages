@@ -5,6 +5,7 @@
 import swc from "@qiuqfang/rollup-plugin-swc";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
+import nodeResolve from "@rollup/plugin-node-resolve";
 import del from "rollup-plugin-delete";
 
 export default {
@@ -14,5 +15,11 @@ export default {
     { file: "dist/index.mjs", format: "es" },
   ],
   external: ["fs/promises", "path", "prettier", "chokidar"],
-  plugins: [swc(), commonjs(), json(), del({ targets: "dist/*" })],
+  plugins: [
+    swc(),
+    nodeResolve({ extensions: [".ts", ".js", ".json"] }),
+    commonjs(),
+    json(),
+    del({ targets: "dist/*" }),
+  ],
 };
