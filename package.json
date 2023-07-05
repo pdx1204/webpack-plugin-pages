@@ -79,7 +79,7 @@
   },
   "dependencies": {
     "chokidar": "^3.5.3",
-    "prettier": "^2.8.7"
+    "prettier": "^3.0.0"
   },
   "directories": {
     "example": "examples",
