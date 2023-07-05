@@ -5,7 +5,7 @@ specifiers:
   '@commitlint/config-conventional': ^17.4.4
   '@jest/globals': ^29.4.3
   '@qiuqfang/eslint-config': ^0.0.7
-  '@qiuqfang/rollup-plugin-swc': ^0.0.8
+  '@qiuqfang/rollup-plugin-swc': ^0.0.9
   '@rollup/plugin-commonjs': ^24.0.1
   '@rollup/plugin-json': ^6.0.0
   '@rollup/plugin-node-resolve': ^15.0.1
@@ -36,7 +36,7 @@ devDependencies:
   '@commitlint/config-conventional': 17.4.4
   '@jest/globals': 29.4.3
   '@qiuqfang/eslint-config': 0.0.7_j4766f7ecgqbon3u7zlxn5zszu
-  '@qiuqfang/rollup-plugin-swc': 0.0.8_rollup@3.15.0
+  '@qiuqfang/rollup-plugin-swc': 0.0.9_rollup@3.15.0
   '@rollup/plugin-commonjs': 24.0.1_rollup@3.15.0
   '@rollup/plugin-json': 6.0.0_rollup@3.15.0
   '@rollup/plugin-node-resolve': 15.0.1_rollup@3.15.0
@@ -983,8 +983,8 @@ packages:
       - typescript
     dev: true
 
-  /@qiuqfang/rollup-plugin-swc/0.0.8_rollup@3.15.0:
-    resolution: {integrity: sha512-94g/sMMiv6aa74/2uX6fdWLt0LVQgDVjks2dAhiZjAVJCGZCCPh3LAjGwPYMR167deMn7A1kM/TrhzxPjmUWMA==}
+  /@qiuqfang/rollup-plugin-swc/0.0.9_rollup@3.15.0:
+    resolution: {integrity: sha512-lbf4gl5m55RcvNv3O+5VZPeXLZdgqOXtV0AxSPXMsdBIwsmGWXGDCazXZROsfovWmug1lyGNrdGnYQ+roLN2vw==}
     peerDependencies:
       rollup: '>=3.15.0'
     dependencies:
