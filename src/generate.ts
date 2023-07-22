@@ -19,7 +19,7 @@ export async function generateRouterView(fallback: React.ReactNode) {
     // console.log(error);
   }
 
-  const formatStr = await prettier.format(ROUTER_VIEW_TEXT(fallback), { parser: "babel" });
+  const formatStr = await prettier.format(ROUTER_VIEW_TEXT(fallback), { parser: "babel-ts" });
   fs.writeFile(outPath, formatStr, "utf8");
 }
 
@@ -85,7 +85,7 @@ export const handle = async (pagesPath: string, outDir: string) => {
   const template = await prettier.format(
     `${DEPS_TEXT(isLayout)}\n${TYPE_TEXT}\n${IMPORT_TEXT}\n${EXPORT_TEXT(routesText)}`,
     {
-      parser: "babel",
+      parser: "babel-ts",
     }
   );
 
