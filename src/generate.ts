@@ -19,7 +19,8 @@ export async function generateRouterView(fallback: React.ReactNode) {
     // console.log(error);
   }
 
-  fs.writeFile(outPath, prettier.format(ROUTER_VIEW_TEXT(fallback), { parser: "babel" }), "utf8");
+  const formatStr = await prettier.format(ROUTER_VIEW_TEXT(fallback), { parser: "babel" });
+  fs.writeFile(outPath, formatStr, "utf8");
 }
 
 const otherRoutePathMap: { [key: string]: string } = {
@@ -81,7 +82,7 @@ export const handle = async (pagesPath: string, outDir: string) => {
 
   const routesText = await generateRoutes(pagesPath, isLayout);
 
-  const template = prettier.format(
+  const template = await prettier.format(
     `${DEPS_TEXT(isLayout)}\n${TYPE_TEXT}\n${IMPORT_TEXT}\n${EXPORT_TEXT(routesText)}`,
     {
       parser: "babel",
