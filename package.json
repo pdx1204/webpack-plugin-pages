@@ -1,6 +1,6 @@
 {
   "name": "@qiuqfang/webpack-plugin-pages",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "private": false,
   "description": "This is a plugin that automatically generates react routes",
   "keywords": [
