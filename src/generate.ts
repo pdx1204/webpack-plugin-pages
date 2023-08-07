@@ -60,7 +60,6 @@ export async function generateRoutes(
       if (routePath.search(/\[.+\]/) !== -1)
         routePath = routePath.replace(/\[.+\]/, `:${routePath.match(/\[.+\]/)?.[0].slice(1, -1)}`);
 
-      // 当 有布局文件时
       template = parseRouteTemplate(isLayout, routePath, template, filePath);
     }
     if (isDir) {
@@ -70,11 +69,11 @@ export async function generateRoutes(
   return template;
 }
 
-export const handle = async (pagesPath: string, outDir: string) => {
+export const handle = async (pagesPath: string, layoutPath: string, outDir: string) => {
   let isLayout = false;
-  const layoutPath = path.join(process.cwd(), "src/layouts");
+  const fullLayoutPath = path.join(process.cwd(), layoutPath);
   try {
-    await fs.access(layoutPath);
+    await fs.access(fullLayoutPath);
     isLayout = true;
   } catch (error) {
     console.log("没有layouts文件夹");
@@ -113,6 +112,7 @@ function parseRouteTemplate(
   filePath: string
 ) {
   if (isLayout) {
+    // 不需要使用布局
     if (routePath.endsWith("@") || routePath === "*") {
       if (routePath.endsWith("index@")) {
         routePath = routePath.replace("/index@", "");

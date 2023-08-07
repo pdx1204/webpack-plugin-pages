@@ -1,3 +1,10 @@
+export const DEFAULT_WEBPACK_PLUGIN_PAGES_OPTIONS = {
+  path: "src/pages",
+  layoutPath: "src/layouts",
+  outFolderPath: ".routes",
+  fallback: "加载中...",
+};
+
 export const ALLOW_SUFFIX = [".tsx", ".jsx"];
 
 export const DEPS_TEXT = (isLayout: boolean) => `

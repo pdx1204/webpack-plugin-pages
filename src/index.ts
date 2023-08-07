@@ -2,10 +2,11 @@ import path from "path";
 import webpack from "webpack";
 import { generateRouterView, handle } from "./generate";
 import chokidar from "chokidar";
-import { ALLOW_SUFFIX } from "./constants";
+import { ALLOW_SUFFIX, DEFAULT_WEBPACK_PLUGIN_PAGES_OPTIONS } from "./constants";
 
 type WebpackPluginPagesOptions = {
   path: string;
+  layoutPath: string;
   outFolderPath: string;
   fallback: React.ReactNode;
 };
@@ -14,23 +15,20 @@ export class WebpackPluginPages {
   private options: WebpackPluginPagesOptions;
   private pagesPath: string;
 
-  constructor(
-    options: WebpackPluginPagesOptions = {
-      path: "src/pages",
-      outFolderPath: ".routes",
-      fallback: "加载中...",
-    }
-  ) {
-    this.options = options;
+  constructor(options: WebpackPluginPagesOptions) {
+    this.options = {
+      ...DEFAULT_WEBPACK_PLUGIN_PAGES_OPTIONS,
+      ...options,
+    };
     this.pagesPath = path.resolve(process.cwd(), this.options.path);
     console.log(this.pagesPath);
   }
 
   apply(compiler: webpack.Compiler) {
-    const { outFolderPath, fallback } = this.options;
+    const { layoutPath, outFolderPath, fallback } = this.options;
     compiler.hooks.afterPlugins.tap("WebpackPluginPages", async () => {
       const outDir = path.resolve(process.cwd(), outFolderPath);
-      await handle(this.pagesPath, outDir);
+      await handle(this.pagesPath, layoutPath, outDir);
       await generateRouterView(fallback);
 
       if (compiler.options.mode === "production") return;
@@ -42,7 +40,8 @@ export class WebpackPluginPages {
       });
       watcher.on("all", (eventName, filePath) => {
         console.log(eventName, filePath);
-        if (ALLOW_SUFFIX.includes(path.extname(filePath))) handle(this.pagesPath, outFolderPath);
+        if (ALLOW_SUFFIX.includes(path.extname(filePath)))
+          handle(this.pagesPath, layoutPath, outFolderPath);
       });
     });
   }
