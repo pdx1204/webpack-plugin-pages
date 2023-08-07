@@ -12,8 +12,9 @@
   "scripts": {
     "dev": "rollup -c -w",
     "build": "rollup -c && tsc -p tsconfig.json",
-    "lint": "eslint . --fix",
-    "format": "prettier --write .",
+    "lint": "npm run lint:eslint && npm run lint:prettier",
+    "lint:eslint": "eslint . --fix",
+    "lint:prettier": "prettier --write .",
     "prepare": "husky install",
     "commit": "cz",
     "test": "jest",
