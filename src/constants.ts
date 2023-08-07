@@ -1,6 +1,9 @@
 export const DEFAULT_WEBPACK_PLUGIN_PAGES_OPTIONS = {
-  path: "src/pages",
-  layoutPath: "src/layouts",
+  path: { pages: "src/pages", layout: "src/layouts" },
+  extensions: {
+    files: ["styled"],
+    dirs: ["components"],
+  },
   outFolderPath: ".routes",
   fallback: "加载中...",
 };

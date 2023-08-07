@@ -29,6 +29,10 @@ const otherRoutePathMap: { [key: string]: string } = {
 
 export async function generateRoutes(
   pagesPath: string,
+  extensions: {
+    files: string[];
+    dirs: string[];
+  },
   isLayout: boolean,
   template = "",
   routeP = "/"
@@ -47,29 +51,45 @@ export async function generateRoutes(
 
     if (isFile && ALLOW_SUFFIX.includes(suffix)) {
       // 过滤掉 styled 文件
-      if (removeSuffixPath === "styled") continue;
+      if (extensions.files.includes(removeSuffixPath)) continue;
 
-      // 判断是否有layouts文件夹
-
+      // 路由路径
       const rp = removeSuffixPath === "index" ? routeP : routeP + removeSuffixPath;
       const filePath = rp.length > 1 && rp[rp.length - 1] === "/" ? rp.slice(0, -1) : rp;
 
-      let routePath = otherRoutePathMap[filePath] ?? filePath;
-
       // 动态路由
+      let routePath = otherRoutePathMap[filePath] ?? filePath;
       if (routePath.search(/\[.+\]/) !== -1)
         routePath = routePath.replace(/\[.+\]/, `:${routePath.match(/\[.+\]/)?.[0].slice(1, -1)}`);
 
       template = parseRouteTemplate(isLayout, routePath, template, filePath);
     }
     if (isDir) {
-      template = await generateRoutes(fileDir, isLayout, template, `${routeP}${filename}/`); //递归，如果是文件夹，就继续遍历该文件夹下面的文件
+      // 排除 components 文件夹
+      if (extensions.dirs.includes(filename)) continue;
+
+      //递归，如果是文件夹，就继续遍历该文件夹下面的文件
+      template = await generateRoutes(
+        fileDir,
+        extensions,
+        isLayout,
+        template,
+        `${routeP}${filename}/`
+      );
     }
   }
   return template;
 }
 
-export const handle = async (pagesPath: string, layoutPath: string, outDir: string) => {
+export const handle = async (
+  pagesPath: string,
+  layoutPath: string,
+  extensions: {
+    files: string[];
+    dirs: string[];
+  },
+  outDir: string
+) => {
   let isLayout = false;
   const fullLayoutPath = path.join(process.cwd(), layoutPath);
   try {
@@ -79,7 +99,7 @@ export const handle = async (pagesPath: string, layoutPath: string, outDir: stri
     console.log("没有layouts文件夹");
   }
 
-  const routesText = await generateRoutes(pagesPath, isLayout);
+  const routesText = await generateRoutes(pagesPath, extensions, isLayout);
 
   const template = await prettier.format(
     `${DEPS_TEXT(isLayout)}\n${TYPE_TEXT}\n${IMPORT_TEXT}\n${EXPORT_TEXT(routesText)}`,

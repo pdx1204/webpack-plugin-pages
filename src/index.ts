@@ -5,8 +5,11 @@ import chokidar from "chokidar";
 import { ALLOW_SUFFIX, DEFAULT_WEBPACK_PLUGIN_PAGES_OPTIONS } from "./constants";
 
 type WebpackPluginPagesOptions = {
-  path: string;
-  layoutPath: string;
+  path: { pages: string; layout: string };
+  extensions: {
+    files: string[];
+    dirs: string[];
+  };
   outFolderPath: string;
   fallback: React.ReactNode;
 };
@@ -20,15 +23,15 @@ export class WebpackPluginPages {
       ...DEFAULT_WEBPACK_PLUGIN_PAGES_OPTIONS,
       ...options,
     };
-    this.pagesPath = path.resolve(process.cwd(), this.options.path);
-    console.log(this.pagesPath);
+    this.pagesPath = path.resolve(process.cwd(), this.options.path.pages);
   }
 
   apply(compiler: webpack.Compiler) {
-    const { layoutPath, outFolderPath, fallback } = this.options;
+    const { path: currentPath, extensions, outFolderPath, fallback } = this.options;
     compiler.hooks.afterPlugins.tap("WebpackPluginPages", async () => {
       const outDir = path.resolve(process.cwd(), outFolderPath);
-      await handle(this.pagesPath, layoutPath, outDir);
+
+      await handle(this.pagesPath, currentPath.layout, extensions, outDir);
       await generateRouterView(fallback);
 
       if (compiler.options.mode === "production") return;
@@ -41,7 +44,7 @@ export class WebpackPluginPages {
       watcher.on("all", (eventName, filePath) => {
         console.log(eventName, filePath);
         if (ALLOW_SUFFIX.includes(path.extname(filePath)))
-          handle(this.pagesPath, layoutPath, outFolderPath);
+          handle(this.pagesPath, currentPath.layout, extensions, outFolderPath);
       });
     });
   }
