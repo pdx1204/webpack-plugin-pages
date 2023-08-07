@@ -39,7 +39,7 @@
     "@commitlint/cli": "^17.4.4",
     "@commitlint/config-conventional": "^17.4.4",
     "@jest/globals": "^29.4.3",
-    "@qiuqfang/eslint-config": "^0.0.7",
+    "@qiuqfang/eslint-config": "^0.0.12",
     "@qiuqfang/rollup-plugin-swc": "^0.0.9",
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-json": "^6.0.0",
